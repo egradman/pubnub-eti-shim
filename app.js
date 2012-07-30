@@ -6,28 +6,24 @@ var pubnub = require("./pubnub.js").init({
     subscribe_key : "sub-d7664dfd-da94-11e1-b5a4-bbd2d05aa23a"
 });
 
-var client = http.createClient(3000, 'localhost');
-client.addListener('error', function(connectionException){
-    if (connectionException.errno === process.ECONNREFUSED) {
-        util.log('ECONNREFUSED: connection refused to '+client.host+':'+client.port);
-    } else {
-        util.log(connectionException);
-    }
-});
-
 pubnub.subscribe({
     channel  : "tussaud",
     callback : function(message) {
         console.log( " > ", message );
-        console.log(typeof message);
-        var request = client.request('GET', '/users/1');
-        //request.write("stuff");
-        request.end();
-        request.on("response", function (response) {
-              console.log(response);
-        });
-        request.on("clientError", function (exception) {
-              console.log(exception);
-        });
+	options = {
+	  host: "localhost",
+	  port: 8000,
+	  path: "/playlist/play/9e78aaca60f94341bca9a8939906eef9",
+	  method: "GET"
+	};
+        req = http.request(options, function(res) {
+	  res.on("data", function(chunk) {
+	    console.log("DATA" + chunk);
+	  });
+	});
+	req.on("error", function(e) {
+	  console.log("error" + e.message);
+	});
+	req.end();
     }
 });
